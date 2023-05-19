@@ -10,55 +10,45 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig); //inicia Firestore
 const db = firebase.firestore(); //inicia data base
 
-
-//read form info *********<<<<<<<
-// const validationForm = (e) => {
-//   e.preventDefault();
-
-//   let contactName = e.target;
-//   let contactEmail = e.target;
-//   let contactImage = e.target;
-//   let contactMessage = e.target;
-
-//   console.log('contactName', contactName)
-//   console.log('contactEmail', contactEmail)
-//   console.log('contactImage', contactImage)
-//   console.log('contactMessage', contactMessage)
-// }
-// document.querySelector('#contactForm').addEventListener('submit', validationForm)
-
-// let contact = [
-//   {
-//     userName:'Mariangelica',
-//     userEmail: 'mariangelica0203@gmail.com',
-//     userMessage: 'My first message',
-//     UserImage: 'https://www.google.com/search?q=imagenes+graciosas&rlz=1C1CHBF_esES930ES930&sxsrf=APwXEdeYSHUOZQQXSiyYedYfOK-eXYwttg:1684478643135&source=lnms&tbm=isch&sa=X&ved=2ahUKEwjMmJ_544D_AhUnVqQEHV-tD-kQ_AUoAXoECAEQAw&biw=1024&bih=497&dpr=1.88#imgrc=cw_wNQ7vSoXGUM',
-//   }
-// ]
+//---> 1 exercise
+//Print into DOM
+const printContact = (name, email, message='Mensaje: ', image='https://cdn-icons-png.flaticon.com/512/3135/3135715.png') => {
+  const list = document.querySelector('.contactsList');
+  list.innerHTML += `<article>
+                      <img src="${image}" alt="${name}">
+                      <section>
+                        <h2>${name}</h2>
+                        <p>${email}</p>
+                        <p>${message}</p>
+                      </section>
+                      <button class="takeOff">Quitar</button>
+                    </article>`
+}
 
 // Create contact
 const createContact = (contact) => {
   db.collection('contacts')
     .add(contact)
-    .then((docRef) => console.log("Document written with ID: ", docRef.id))
-    .catch((error) => console.error("Error adding document: ", error))
+    .then(contact => console.log(contact.id))
+    .catch(error => console.error("Error adding document: ", error))
 }
-// createContact(contact);
 
-// createContact(contact);
-// //leer todos los contactos
-// db.collection("users")
-//   .get()
-//   .then((querySnapshot) => {
-//   querySnapshot.forEach((doc) => console.log(`${doc.id} => ${doc.data()}`));
-// });
-// //grab info into collection data
+//leer contactos
+const readAllContacts = () => {
+  db.collection('contacts')
+    .get()
+    .then(contactList => {
+      contactList.forEach(contact => {
+        printContact(contact.data().name, contact.data().email, contact.data().message, contact.data().image);
+      })
+    })
+    .catch(error => {
+      console.log("Error getting contacts:", error);
+    });
+};
+document.querySelector('.showContactsBtn').addEventListener('click', readAllContacts);
 
-// //paint info into DOM
-
-// //validate form
-
-document.querySelector("#contactForm").addEventListener("submit", (e) => {
+const handleSubmit = (e) => {
   e.preventDefault();
   let name = e.target.name.value;
   let email = e.target.email.value;
@@ -66,8 +56,10 @@ document.querySelector("#contactForm").addEventListener("submit", (e) => {
   let image = e.target.image.value;
 
   createContact({name, email, message, image}); //Registro de contacto en fireStore
+
   e.target.name.value = '';
   e.target.email.value = '';
   e.target.message.value = '';
   e.target.image.value = '';
-});
+}
+document.querySelector("#contactForm").addEventListener("submit", handleSubmit);
