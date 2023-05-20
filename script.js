@@ -7,29 +7,54 @@ const firebaseConfig = {
   messagingSenderId: "60445545666",
   appId: "1:60445545666:web:01019366effcd19f33575b"
 };
-firebase.initializeApp(firebaseConfig); //inicia Firestore
-const db = firebase.firestore(); //inicia data base
+firebase.initializeApp(firebaseConfig); //inicia Firestore (firestorei init)
+const db = firebase.firestore(); //inicia data base (DDBB init)
 
 //---> 1 exercise
-//Print into DOM
-const printContact = (name, email, message='Mensaje: ', image='https://cdn-icons-png.flaticon.com/512/3135/3135715.png') => {
-  const list = document.querySelector('.contactsList');
-  list.innerHTML += `<article>
-                      <img src="${image}" alt="${name}">
-                      <section>
-                        <h2>${name}</h2>
-                        <p>${email}</p>
-                        <p>${message}</p>
-                      </section>
-                      <button class="takeOff">Quitar</button>
-                    </article>`
+//Borrar un contacto
+const removeContact = (e) => {
+  db.collection('contacts')
+    .doc(e.target.id)
+    .delete()
+    .then(() => {
+      e.target.remove() //Borra btn
+      document.querySelector('.contactsList').innerHTML = ""; //Borra lista
+      readAllContacts(); //lee y pinta de nuevo
+    })
+      .catch(() => console.log('Error borrando el contacto'));
 }
 
-// Create contact
+//Print into DOM
+const printContact = (id, name, email, message='Mensaje: ', image='https://media.istockphoto.com/id/1130884625/es/vector/icono-de-vector-de-miembro-de-usuario-para-interfaz-de-usuario-ui-o-perfil-cara-aplicaci%C3%B3n.jpg?s=612x612&w=0&k=20&c=ilhyDyzPONgmDcwiEcxnd17M0NHt-4PlrQQ55VxVQmw=') => {
+  const list = document.querySelector('.contactsList');
+  const article = document.createElement('article');
+  const contactImage = document.createElement('img');
+  contactImage.src = image
+
+  const contactInfo = document.createElement('section');
+  const contactName = document.createElement('h2');
+  contactName.textContent = name;
+
+  const contactEmail = document.createElement('p');
+  contactEmail.textContent = email;
+
+  const contactMessage = document.createElement('p');
+  contactMessage.textContent = message;
+
+  const removebutton = document.createElement('button');
+  removebutton.textContent = 'Borrar contacto';
+  removebutton.setAttribute('id', id);
+  removebutton.addEventListener('click', removeContact); //escucha de evento
+
+  list.append(article, contactInfo);
+  article.append(contactImage, contactInfo, removebutton);
+  contactInfo.append(contactName, contactEmail);
+}
+
 const createContact = (contact) => {
   db.collection('contacts')
     .add(contact)
-    .then(contact => console.log(contact.id))
+    .then(contact => contact.id)
     .catch(error => console.error("Error adding document: ", error))
 }
 
@@ -39,7 +64,7 @@ const readAllContacts = () => {
     .get()
     .then(contactList => {
       contactList.forEach(contact => {
-        printContact(contact.data().name, contact.data().email, contact.data().message, contact.data().image);
+        printContact(contact.id, contact.data().name, contact.data().email, contact.data().message, contact.data().image);
       })
     })
     .catch(error => {
@@ -47,6 +72,7 @@ const readAllContacts = () => {
     });
 };
 document.querySelector('.showContactsBtn').addEventListener('click', readAllContacts);
+
 
 const handleSubmit = (e) => {
   e.preventDefault();
