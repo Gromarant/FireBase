@@ -40,6 +40,7 @@ const printContact = (id, name, email, message='Mensaje: ', image='https://media
   const list = document.querySelector('.contactsList');
   const article = document.createElement('article');
   const contactImage = document.createElement('img');
+  contactImage.className = 'contactImg'
   contactImage.src = image
 
   const contactInfo = document.createElement('section');
@@ -53,7 +54,8 @@ const printContact = (id, name, email, message='Mensaje: ', image='https://media
   contactMessage.textContent = message;
 
   const removebutton = document.createElement('button');
-  removebutton.textContent = 'Borrar contacto';
+  removebutton.textContent = 'Borrar';
+  removebutton.className = 'btn';
   removebutton.setAttribute('id', id);
   removebutton.addEventListener('click', removeContact); //escucha de evento
 
