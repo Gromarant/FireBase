@@ -10,7 +10,7 @@
   </head>
   <body>
     <main>
-      <form id="form">
+      <form id="contactForm">
         <label for="name">Name
           <input type="name" name="userName" id="name">
         </label>
@@ -23,8 +23,18 @@
         <label for="image">Image
           <input type="text" name="UserImage" id="image">
         </label>
+        <section>
+          <button class="btn resetBtn" type="reset">Reset</button>
+          <button class="btn SubmitBtn" type="submit">Submit</button>
+        </section>
       </form>
+      <button class="btn showAllContactsBtn">Mostrar contactos</button>
+      <button class="btn hideAllContactsBtn">Dejar de mostrar</button>
+      <button class="btn removeAllContactsBtn">Borrar contactos</button>
+      <section class="contactsList"></section>
     </main>
+    <script src="https://www.gstatic.com/firebasejs/8.7.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.7.1/firebase-firestore.js"></script>
     <script src="script.js"></script>
   </body>
 </html>

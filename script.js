@@ -10,18 +10,29 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig); //inicia Firestore (firestorei init)
 const db = firebase.firestore(); //inicia data base (DDBB init)
 
-//---> 1 exercise
-//Borrar un contacto
-const removeContact = (e) => {
+
+//Registrar contacto en firestore
+const createContact = (contact) => {
   db.collection('contacts')
-    .doc(e.target.id)
-    .delete()
-    .then(() => {
-      e.target.remove() //Borra btn
-      document.querySelector('.contactsList').innerHTML = ""; //Borra lista
-      readAllContacts(); //lee y pinta de nuevo
-    })
-      .catch(() => console.log('Error borrando el contacto'));
+    .add(contact)
+    .then(contact => contact.id)
+    .catch(error => console.error("Error adding document: ", error))
+}
+
+//Obtener datos de contacto
+const handleSubmit = (e) => {
+  e.preventDefault();
+  let name = e.target.name.value;
+  let email = e.target.email.value;
+  let message = e.target.message.value;
+  let image = e.target.image.value;
+
+  createContact({name, email, message, image}); //Registro de contacto en fireStore
+
+  e.target.name.value = '';
+  e.target.email.value = '';
+  e.target.message.value = '';
+  e.target.image.value = '';
 }
 
 //Print into DOM
@@ -51,13 +62,6 @@ const printContact = (id, name, email, message='Mensaje: ', image='https://media
   contactInfo.append(contactName, contactEmail);
 }
 
-const createContact = (contact) => {
-  db.collection('contacts')
-    .add(contact)
-    .then(contact => contact.id)
-    .catch(error => console.error("Error adding document: ", error))
-}
-
 //leer contactos
 const readAllContacts = () => {
   db.collection('contacts')
@@ -71,21 +75,48 @@ const readAllContacts = () => {
       console.log("Error getting contacts:", error);
     });
 };
-document.querySelector('.showContactsBtn').addEventListener('click', readAllContacts);
 
-
-const handleSubmit = (e) => {
-  e.preventDefault();
-  let name = e.target.name.value;
-  let email = e.target.email.value;
-  let message = e.target.message.value;
-  let image = e.target.image.value;
-
-  createContact({name, email, message, image}); //Registro de contacto en fireStore
-
-  e.target.name.value = '';
-  e.target.email.value = '';
-  e.target.message.value = '';
-  e.target.image.value = '';
+//Borrar un contacto
+const removeContact = (e) => {
+  db.collection('contacts')
+    .doc(e.target.id)
+    .delete()
+    .then(() => {
+      e.target.remove() //Borra btn
+      document.querySelector('.contactsList').innerHTML = ""; //Borra lista
+      readAllContacts(); //lee y pinta de nuevo
+    })
+    .catch(() => console.log('Error borrando el contacto'));
 }
+
+//Obtener id de contactos
+const removeContactById = (id) => {
+  db.collection('contacts')
+    .doc(id)
+    .delete()
+    .then(() => {
+      document.querySelector('.contactsList').innerHTML = ""; //Borra lista
+      readAllContacts(); //lee y pinta de nuevo
+    })
+    .catch(() => console.log('Error borrando el contacto'));
+}
+
+//Borrar todos los contactos
+const removeAllContacts = () => {
+  db.collection('contacts')
+    .get()
+    .then(contactList => {
+      contactList.forEach(contact => {
+        removeContactById(contact.id);
+      })
+    })
+    .catch(error => {
+      console.log("Error getting contacts:", error);
+    });
+};
+
+//eventos
 document.querySelector("#contactForm").addEventListener("submit", handleSubmit);
+document.querySelector('.showAllContactsBtn').addEventListener('click', readAllContacts);
+document.querySelector('.hideAllContactsBtn').addEventListener('click', () => document.querySelector('.contactsList').innerHTML = '');
+document.querySelector('.removeAllContactsBtn').addEventListener('click', removeAllContacts);
