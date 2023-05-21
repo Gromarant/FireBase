@@ -11,7 +11,7 @@ firebase.initializeApp(firebaseConfig); //inicia Firestore (firestorei init)
 const db = firebase.firestore(); //inicia data base (DDBB init)
 
 
-//Registrar contacto en firestore
+//Registrar contacto en firestore (add contact into firestore)
 const createContact = (contact) => {
   db.collection('contacts')
     .add(contact)
@@ -19,23 +19,68 @@ const createContact = (contact) => {
     .catch(error => console.error("Error adding document: ", error))
 }
 
-//Obtener datos de contacto
+//Agregar mensaje de error (add error message)
+const setErrorMessage = (errorMessage) =>
+Swal.fire({
+  icon: 'error',
+  title: 'Error',
+  text: errorMessage,
+  footer: '<a href="">Why do I have this issue?</a>'
+})
+
+//Obtener datos de contacto (get contact data)
 const handleSubmit = (e) => {
   e.preventDefault();
   let name = e.target.name.value;
   let email = e.target.email.value;
   let message = e.target.message.value;
   let image = e.target.image.value;
+ 
 
-  createContact({name, email, message, image}); //Registro de contacto en fireStore
 
-  e.target.name.value = '';
-  e.target.email.value = '';
-  e.target.message.value = '';
-  e.target.image.value = '';
+  //Validación del formulario (validation form)
+  let errorMessage = '';
+  let validated = true;
+  
+  if( name.length < 2) {
+    validated = false;
+    errorMessage += '* Nombre: debe tener un mínimo de 3 letras';
+  } 
+  else if (name.length > 50) {
+    validated = false;
+    errorMessage += '* Nombre: El nombre es muy largo';
+  }
+
+  if (!email.endsWith('.com')) {
+      validated = false;
+      errorMessage += '* Email: Solo admite email terminados en .com';
+  }
+
+  if (message.length > 280) {
+    validated = false;
+    errorMessage += '* Mensaje: muy largo, debe ser de máximo 280 caracteres';
+  }
+
+  if (image.length > 0) {
+    if (image === null || image === undefined) {
+      let defaultImage = 'https://shorturl.at/tvAL4';
+      image = defaultImage;
+    }
+  }
+
+  if (validated) {
+    createContact({name, email, message, image});
+    e.target.name.value = '';
+    e.target.email.value = '';
+    e.target.message.value = '';
+    e.target.image.value = '';
+  } 
+  else {
+    setErrorMessage(errorMessage);
+  }
 }
 
-//Print into DOM
+//Pintar en el DOM (Print into DOM)
 const printContact = (id, name, email, message='Mensaje: ', image='https://media.istockphoto.com/id/1130884625/es/vector/icono-de-vector-de-miembro-de-usuario-para-interfaz-de-usuario-ui-o-perfil-cara-aplicaci%C3%B3n.jpg?s=612x612&w=0&k=20&c=ilhyDyzPONgmDcwiEcxnd17M0NHt-4PlrQQ55VxVQmw=') => {
   const list = document.querySelector('.contactsList');
   const article = document.createElement('article');
@@ -57,14 +102,15 @@ const printContact = (id, name, email, message='Mensaje: ', image='https://media
   removebutton.textContent = 'Borrar';
   removebutton.className = 'btn';
   removebutton.setAttribute('id', id);
-  removebutton.addEventListener('click', removeContact); //escucha de evento
+
+  removebutton.addEventListener('click', removeContact); //escucha de evento (listener of event)
 
   list.append(article, contactInfo);
   article.append(contactImage, contactInfo, removebutton);
   contactInfo.append(contactName, contactEmail);
 }
 
-//leer contactos
+//leer contactos (read contacts)
 const readAllContacts = () => {
   db.collection('contacts')
     .get()
@@ -78,32 +124,32 @@ const readAllContacts = () => {
     });
 };
 
-//Borrar un contacto
+//Borrar un contacto (remove a contact)
 const removeContact = (e) => {
   db.collection('contacts')
     .doc(e.target.id)
     .delete()
     .then(() => {
-      e.target.remove() //Borra btn
-      document.querySelector('.contactsList').innerHTML = ""; //Borra lista
+      e.target.remove() //Borra btn (remove btn)
+      document.querySelector('.contactsList').innerHTML = ""; //Borra lista (remode list)
       readAllContacts(); //lee y pinta de nuevo
     })
     .catch(() => console.log('Error borrando el contacto'));
 }
 
-//Obtener id de contactos
+//Obtener id de contactos (get contacts id)
 const removeContactById = (id) => {
   db.collection('contacts')
     .doc(id)
     .delete()
     .then(() => {
-      document.querySelector('.contactsList').innerHTML = ""; //Borra lista
+      document.querySelector('.contactsList').innerHTML = ""; //Borra lista (remove list)
       readAllContacts(); //lee y pinta de nuevo
     })
     .catch(() => console.log('Error borrando el contacto'));
 }
 
-//Borrar todos los contactos
+//Borrar todos los contactos (remove all contacts from firestore)
 const removeAllContacts = () => {
   db.collection('contacts')
     .get()
@@ -117,7 +163,7 @@ const removeAllContacts = () => {
     });
 };
 
-//eventos
+//eventos (events call)
 document.querySelector("#contactForm").addEventListener("submit", handleSubmit);
 document.querySelector('.showAllContactsBtn').addEventListener('click', readAllContacts);
 document.querySelector('.hideAllContactsBtn').addEventListener('click', () => document.querySelector('.contactsList').innerHTML = '');

@@ -12,16 +12,16 @@
     <main>
       <form id="contactForm">
         <label for="name">Name
-          <input type="name" name="userName" id="name">
+          <input type="name" name="contactName" id="name" required>
         </label>
         <label for="email">Email
-          <input type="email" name="userEmail" id="email">
+          <input type="email" name="contactEmail" id="email" required>
         </label>
         <label for="message">field for your message
-          <textarea name="userMessage" id="message" rows="10" cols="15" placeholder="Write something here"></textarea>
+          <textarea name="contactMessage" id="message" rows="10" cols="15" placeholder="Write something here"></textarea>
         </label>
         <label for="image">Image
-          <input type="text" name="UserImage" id="image">
+          <input type="text" name="contactImage" id="image">
         </label>
         <section class="form_btns">
           <button class="btn resetBtn" type="reset">Reset</button>
@@ -35,6 +35,7 @@
       </section>
       <section class="contactsList"></section>
     </main>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://www.gstatic.com/firebasejs/8.7.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.7.1/firebase-firestore.js"></script>
     <script src="script.js"></script>
