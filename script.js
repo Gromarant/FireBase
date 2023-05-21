@@ -36,8 +36,6 @@ const handleSubmit = (e) => {
   let message = e.target.message.value;
   let image = e.target.image.value;
  
-
-
   //Validación del formulario (validation form)
   let errorMessage = '';
   let validated = true;
@@ -63,7 +61,7 @@ const handleSubmit = (e) => {
 
   if (image.length > 0) {
     if (image === null || image === undefined) {
-      let defaultImage = 'https://shorturl.at/tvAL4';
+      let defaultImage = './assets/images/default.jpg';
       image = defaultImage;
     }
   }
@@ -115,8 +113,9 @@ const readAllContacts = () => {
   db.collection('contacts')
     .get()
     .then(contactList => {
+      cleanContactList(); //Borra lista (remove list)
       contactList.forEach(contact => {
-        printContact(contact.id, contact.data().name, contact.data().email, contact.data().message, contact.data().image);
+          printContact(contact.id, contact.data().name, contact.data().email, contact.data().message, contact.data().image);
       })
     })
     .catch(error => {
@@ -124,14 +123,16 @@ const readAllContacts = () => {
     });
 };
 
+//limpiar lista de contactos
+const cleanContactList = () => document.querySelector('.contactsList').innerHTML = "";
 //Borrar un contacto (remove a contact)
 const removeContact = (e) => {
   db.collection('contacts')
     .doc(e.target.id)
     .delete()
     .then(() => {
-      e.target.remove() //Borra btn (remove btn)
-      document.querySelector('.contactsList').innerHTML = ""; //Borra lista (remode list)
+      e.target.remove(); //Borra btn (remove btn)
+      cleanContactList(); //Borra lista (remode list)
       readAllContacts(); //lee y pinta de nuevo
     })
     .catch(() => console.log('Error borrando el contacto'));
@@ -143,7 +144,7 @@ const removeContactById = (id) => {
     .doc(id)
     .delete()
     .then(() => {
-      document.querySelector('.contactsList').innerHTML = ""; //Borra lista (remove list)
+      cleanContactList(); //Borra lista (remove list)
       readAllContacts(); //lee y pinta de nuevo
     })
     .catch(() => console.log('Error borrando el contacto'));
