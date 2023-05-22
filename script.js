@@ -1,11 +1,6 @@
 // Inicializaar app Firebase
 const firebaseConfig = {
-  apiKey: "AIzaSyDClutGFp5IVwNmQRDwAKbzusCYLUwqdCQ",
-  authDomain: "form-firebase-309e2.firebaseapp.com",
-  projectId: "form-firebase-309e2",
-  storageBucket: "form-firebase-309e2.appspot.com",
-  messagingSenderId: "60445545666",
-  appId: "1:60445545666:web:01019366effcd19f33575b"
+ //YOUR CONFIG OBJECT HERE
 };
 firebase.initializeApp(firebaseConfig); //inicia Firestore (firestorei init)
 const db = firebase.firestore(); //inicia data base (DDBB init)
@@ -59,12 +54,12 @@ const handleSubmit = (e) => {
     errorMessage += '* Mensaje: muy largo, debe ser de máximo 280 caracteres';
   }
 
-  if (image.length > 0) {
-    if (image === null || image === undefined) {
-      let defaultImage = './assets/images/default.jpg';
-      image = defaultImage;
-    }
-  }
+  // if (image.length > 0) {
+  //   if (image === null || image === undefined) {
+  //     let defaultImage = '/assets/images/defaultSAvatar.jpg';
+  //     image = defaultImage;
+  //   }
+  // }
 
   if (validated) {
     createContact({name, email, message, image});
@@ -79,7 +74,7 @@ const handleSubmit = (e) => {
 }
 
 //Pintar en el DOM (Print into DOM)
-const printContact = (id, name, email, message='Mensaje: ', image='https://media.istockphoto.com/id/1130884625/es/vector/icono-de-vector-de-miembro-de-usuario-para-interfaz-de-usuario-ui-o-perfil-cara-aplicaci%C3%B3n.jpg?s=612x612&w=0&k=20&c=ilhyDyzPONgmDcwiEcxnd17M0NHt-4PlrQQ55VxVQmw=') => {
+const printContact = (id, name, email, message='Mensaje: ', image='https://media.istockphoto.com/id/519078723/es/foto/macho-silhouette-como-avatar-imagen-de-perfil.jpg?s=612x612&w=0&k=20&c=FDnh6v60CG749QECSPRqCUp_kobZsEyfba5UH8zwQ7s= ') => {
   const list = document.querySelector('.contactsList');
   const article = document.createElement('article');
   const contactImage = document.createElement('img');
