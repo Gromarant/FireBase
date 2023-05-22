@@ -73,7 +73,7 @@ const handleSubmit = (e) => {
     cleanInputsValue(e);
   }
   
-  if (!image) {
+  if (image === '') {
     image = '/assets/images/defaultSAvatar.jpg';
   }
 
