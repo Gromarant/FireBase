@@ -23,6 +23,23 @@ Swal.fire({
   footer: '<a href="">Why do I have this issue?</a>'
 })
 
+
+//validations patterns
+const nameValidation = /^[a-zA-Z]{2,20}$/;
+const emailValidation = /^\w+([*@\/hotmail\/gmail([\.-]?\w+)*(\.\w{2,4})$/;
+
+//Validation Functions
+const checkEmail = (contactEmail) => emailValidation.test(contactEmail);
+const checkName = (contactName) => nameValidation.test(contactName);
+
+//limpiar los valores de los inputs
+const cleanInputsValue = (e) => {
+  e.target.name.value = '';
+  e.target.email.value = '';
+  e.target.message.value = '';
+  e.target.image.value = '';
+}
+
 //Obtener datos de contacto (get contact data)
 const handleSubmit = (e) => {
   e.preventDefault();
@@ -30,43 +47,39 @@ const handleSubmit = (e) => {
   let email = e.target.email.value;
   let message = e.target.message.value;
   let image = e.target.image.value;
- 
+  
   //Validación del formulario (validation form)
   let errorMessage = '';
   let validated = true;
+
   
-  if( name.length < 2) {
+  if(!checkName(name)) {
     validated = false;
     errorMessage += '* Nombre: debe tener un mínimo de 3 letras';
+    cleanInputsValue(e);
   } 
-  else if (name.length > 50) {
-    validated = false;
-    errorMessage += '* Nombre: El nombre es muy largo';
+  
+  if (!checkName) {
+    errorMessage  += '* Nombre: debe tener al menos 2 caracteres, no contener números, caracteres especiales o espacios y tener un máximo de 20 caracteres';
+    cleanInputsValue(e);
   }
-
-  if (!email.endsWith('.com')) {
-      validated = false;
-      errorMessage += '* Email: Solo admite email terminados en .com';
+  else if (!checkEmail) {
+    errorMessage += '* Email: no admite caracteres especiales';
+    cleanInputsValue(e);
   }
-
-  if (message.length > 280) {
+  else if (message.length > 280) {
     validated = false;
     errorMessage += '* Mensaje: muy largo, debe ser de máximo 280 caracteres';
+    cleanInputsValue(e);
   }
-
-  // if (image.length > 0) {
-  //   if (image === null || image === undefined) {
-  //     let defaultImage = '/assets/images/defaultSAvatar.jpg';
-  //     image = defaultImage;
-  //   }
-  // }
+  
+  if (!image) {
+    image = '/assets/images/defaultSAvatar.jpg';
+  }
 
   if (validated) {
     createContact({name, email, message, image});
-    e.target.name.value = '';
-    e.target.email.value = '';
-    e.target.message.value = '';
-    e.target.image.value = '';
+    cleanInputsValue(e);
   } 
   else {
     setErrorMessage(errorMessage);
@@ -74,7 +87,7 @@ const handleSubmit = (e) => {
 }
 
 //Pintar en el DOM (Print into DOM)
-const printContact = (id, name, email, message='Mensaje: ', image='https://media.istockphoto.com/id/519078723/es/foto/macho-silhouette-como-avatar-imagen-de-perfil.jpg?s=612x612&w=0&k=20&c=FDnh6v60CG749QECSPRqCUp_kobZsEyfba5UH8zwQ7s= ') => {
+const printContact = (id, name, email, message='Mensaje: ', image='/assets/images/defaultSAvatar.jpg') => {
   const list = document.querySelector('.contactsList');
   const article = document.createElement('article');
   const contactImage = document.createElement('img');
